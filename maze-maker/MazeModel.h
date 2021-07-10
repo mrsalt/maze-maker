@@ -18,16 +18,10 @@ public:
     const Location startPosition;
     const Location endPosition;
     std::vector<Cell> data;
+    std::vector<size_t> emptyCountByRow;
     size_t countEmpty;
 
-    MazeModel(Size size, Location start, Location end)
-        : size(size)
-        , startPosition(start)
-        , endPosition(end)
-    {       
-        data.resize(size.width * size.height, Cell(Direction::EMPTY));
-        countEmpty = data.size();
-    }
+    MazeModel(Size size, Location start, Location end);
 
     MazeModel(const MazeModel& src);
 
@@ -35,15 +29,30 @@ public:
         return l.x >= 0 && l.x < size.width && l.y >= 0 && l.y < size.height;
     }
 
-    Cell & cell(Location l) {
-        return data[l.y * size.width + l.x];
-    }
-
     size_t getCountEmpty() const { return countEmpty; }
 
     bool canBeCompleted(Location l) const;
 
+    const Cell& getCell(Location l) const {
+        return data[l.y * size.width + l.x];
+    }
+
+    size_t nonEmptyNeighbors(Location l) const;
+    size_t emptyNeighbors(Location l) const;
+
+    Location pickNeighbor(Location l, int rand_value) const;
+
+    int addPath(Direction direction, int distance);
+
+    void unwindPath(Direction direction, int distance);
+
+    bool markCell(Location l, Direction d);
+
 private:
+    Cell& cell(Location l) {
+        return data[l.y * size.width + l.x];
+    }
+
     bool recursiveMarkToPosition(Location start, Location l);
 
 };

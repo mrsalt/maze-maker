@@ -14,6 +14,11 @@ public:
         position = model.startPosition;
     }
 
-    bool addPath(Direction direction, int distance);
+    void go();
 
+protected:
+    int addPath(Direction direction, int distance);
+    void unwindPath(Direction direction, int distance);
+    size_t countyEmptyCellsWithAdjacentOccupiedCells(int y) const;
+    Location findBranch() const;
 };
