@@ -1,5 +1,6 @@
 ﻿#include "MazeModel.h"
 #include "MazeMaker.h"
+#include "Render.h"
 #include <iostream>
 
 using namespace std;
@@ -7,9 +8,10 @@ using namespace std;
 int main()
 {
     try {
-        MazeModel model({ 40, 20 }, { 0, 0 }, { 39, 19 });
+        MazeModel model({ 80, 60 }, { 0, 0 }, { 79, 59 });
         MazeMaker maker(model);
         maker.go();
+        Render::output(model, 50, "maze.png");
     }
     catch (exception e) {
         cout << "Exception occurred: " << e.what() << endl;
