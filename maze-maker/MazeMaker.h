@@ -14,7 +14,7 @@ public:
         position = model.startPosition;
     }
 
-    void go();
+    void go(int seed, int maxDistance);
 
 protected:
     int addPath(Direction direction, int distance);

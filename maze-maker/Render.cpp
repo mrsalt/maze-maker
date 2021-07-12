@@ -9,8 +9,10 @@ bool pathIsOpen(const MazeModel& model, Location a, Location b)
     return (model.getCell(b).fromDirection == aToB) || (model.getCell(a).fromDirection == bToA);
 }
 
-void Render::output(const MazeModel& model, int pixelsPerSquare, string outputFile)
+void Render::output(const MazeModel& model, const Arguments & args)
 {
+    int pixelsPerSquare = args.pixels_per_cell;
+    string outputFile = args.output_filename + ".png";
     cairo_surface_t* surface;
     cairo_t* cr;
     int lineThickness = 1;
@@ -79,6 +81,13 @@ void Render::output(const MazeModel& model, int pixelsPerSquare, string outputFi
             cairo_stroke(cr);
         }
     }
+
+    cairo_set_font_size(cr, pixelsPerSquare / 3.0);
+    cairo_move_to(cr, (model.startPosition.x + 0.1) * pixelsPerSquare, (model.startPosition.y + 0.6) * pixelsPerSquare);
+    cairo_show_text(cr, "Start");
+
+    cairo_move_to(cr, (model.endPosition.x + 0.2) * pixelsPerSquare, (model.endPosition.y + 0.6) * pixelsPerSquare);
+    cairo_show_text(cr, "End");
 
     cairo_surface_write_to_png(surface, outputFile.c_str());
     cairo_destroy(cr);

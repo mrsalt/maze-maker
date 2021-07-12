@@ -75,14 +75,15 @@ Location MazeMaker::findBranch() const
     return { x, y };
 }
 
-void MazeMaker::go()
+void MazeMaker::go(int gameSeed, int maxDistance)
 {
+    srand(gameSeed);
     model.markCell(model.startPosition, Direction::START);
 
     while (position != model.endPosition) {
         Location l = position;
         Direction direction = (Direction)(1 + rand() % 4);
-        int distance = 1 + rand() % 10;
+        int distance = 1 + rand() % maxDistance;
         int marked = addPath(direction, distance);
         if (marked > 0) {
             if (!model.canBeCompleted(position)) {
@@ -103,7 +104,7 @@ void MazeMaker::go()
             throw exception("failed to add path");
         while (model.emptyNeighbors(position) > 0) {
             Direction direction = (Direction)(1 + rand() % 4);
-            int distance = 1 + rand() % 10;
+            int distance = 1 + rand() % maxDistance;
             addPath(direction, distance);
         }
     }
