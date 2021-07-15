@@ -42,6 +42,17 @@ public:
 
     Location pickNeighbor(Location l, int rand_value) const;
 
+    bool pathIsOpen(Location a, Location b) const {
+        Direction aToB = b - a;
+        Direction bToA = a - b;
+        return (getCell(b).fromDirection == aToB) || (getCell(a).fromDirection == bToA);
+    }
+
+    bool isCorner(Location l) const {
+        return (l.x == 0 && (l.y == 0 || l.y == size.height - 1)) ||
+               (l.x == size.width - 1 && (l.y == 0 || l.y == size.height - 1));
+    }
+
     int addPath(Direction direction, int distance);
 
     void unwindPath(Direction direction, int distance);
@@ -53,6 +64,6 @@ private:
         return data[l.y * size.width + l.x];
     }
 
-    bool recursiveMarkToPosition(Location start, Location l);
+    bool markToPosition(Location start, Location l);
 
 };

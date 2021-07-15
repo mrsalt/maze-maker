@@ -7,15 +7,16 @@ class Arguments : public ArgumentParser
 public:
     int width{ 40 };
     int height{ 30 };
-    int start_x{ 0 };
-    int start_y{ 0 };
-    int end_x{ 39 };
-    int end_y{ 29 };
+    int start_x{ -1 };
+    int start_y{ -1 };
+    int end_x{ -1 };
+    int end_y{ -1 };
     int max_path{ 10 };
     int seed{ 1 };
-    int pixels_per_cell{ 50 };
+    int pixels_per_cell{ 30 };
+    bool draw_solution{ false };
     bool draw_header{ false };
-    std::string output_filename{"maze"};
+    std::string output_filename;
 
     Arguments()
     {        
@@ -29,6 +30,7 @@ public:
         addArgument<Type::INTEGER>("--seed", "-s", "Random number seed.", &seed);
         addArgument<Type::INTEGER>("--cell-size", "-cs", "Size of each maze cell in pixels.", &pixels_per_cell);
         addArgument<Type::BOOL_FLAG>("--draw-header", "-d", "Draw header above maze showing details.", &draw_header);
+        addArgument<Type::BOOL_FLAG>("--draw-solution", "-ds", "Draw solution path from start to finish.", &draw_solution);
         addArgument<Type::STRING>("--output", "-o", "Filename to write PNG file to.  (.png will be appended)", &output_filename);
     }
 };

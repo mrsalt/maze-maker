@@ -1,3 +1,4 @@
+#include <stack>
 #include "MazeModel.h"
 
 using namespace std;
@@ -82,25 +83,33 @@ bool MazeModel::markCell(Location l, Direction d)
 bool MazeModel::canBeCompleted(Location l) const
 {
     MazeModel copy(*this);
-    return copy.recursiveMarkToPosition(endPosition, l);
+    return copy.markToPosition(endPosition, l);
 }
 
-bool MazeModel::recursiveMarkToPosition(Location start, Location end)
+bool MazeModel::markToPosition(Location start, Location end)
 {
-    if (!inBounds(start))
-        return false;
+    stack<Location> toVisit;
+    toVisit.push(start);
 
-    if (start == end)
-        return true;
+    while (!toVisit.empty()) {
+        Location l = toVisit.top();
+        toVisit.pop();
 
-    Cell& current = cell(start);
-    if (!current.isEmpty())
-        return false;
+        if (!inBounds(l))
+            continue;
 
-    cell(start).fromDirection = Direction::MARKED;
+        if (l == end)
+            return true;
 
-    return recursiveMarkToPosition(start + Direction::LEFT, end) ||
-        recursiveMarkToPosition(start + Direction::RIGHT, end) ||
-        recursiveMarkToPosition(start + Direction::UP, end) ||
-        recursiveMarkToPosition(start + Direction::DOWN, end);
+        Cell& current = cell(l);
+        if (!current.isEmpty())
+            continue;
+
+        cell(l).fromDirection = Direction::MARKED;
+        toVisit.push(l + Direction::LEFT);
+        toVisit.push(l + Direction::RIGHT);
+        toVisit.push(l + Direction::UP);
+        toVisit.push(l + Direction::DOWN);
+    }
+    return false;
 }
