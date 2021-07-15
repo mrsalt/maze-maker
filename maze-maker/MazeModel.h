@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Primitives.h"
+#include "ProgressListener.h"
 
 class Cell
 {
@@ -20,8 +21,9 @@ public:
     std::vector<Cell> data;
     std::vector<size_t> emptyCountByRow;
     size_t countEmpty;
+    ProgressListener* listener;
 
-    MazeModel(Size size, Location start, Location end);
+    MazeModel(Size size, Location start, Location end, ProgressListener * listener = nullptr);
 
     MazeModel(const MazeModel& src);
 

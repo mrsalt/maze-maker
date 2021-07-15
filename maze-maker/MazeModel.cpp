@@ -3,10 +3,11 @@
 
 using namespace std;
 
-MazeModel::MazeModel(Size size, Location start, Location end)
+MazeModel::MazeModel(Size size, Location start, Location end, ProgressListener* listener)
     : size(size)
     , startPosition(start)
     , endPosition(end)
+    , listener(listener)
 {
     data.resize(size.width * size.height, Cell(Direction::EMPTY));
     countEmpty = data.size();
@@ -77,6 +78,8 @@ bool MazeModel::markCell(Location l, Direction d)
     int changeInEmpty = d == Direction::EMPTY ? 1 : -1;
     emptyCountByRow[l.y] += changeInEmpty;
     countEmpty += changeInEmpty;
+    if (listener)
+        listener->onCellChanged(l);
     return true;
 }
 
