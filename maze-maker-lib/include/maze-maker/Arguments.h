@@ -1,5 +1,5 @@
 #pragma once
-#include "ArgParser.h"
+#include "maze-maker/ArgParser.h"
 #include <string>
 
 class Arguments : public ArgumentParser
@@ -19,7 +19,7 @@ public:
     std::string output_filename;
 
     Arguments()
-    {        
+    {
         addArgument<Type::INTEGER>("--width", "-w", "Width of maze or number of columns.", &width);
         addArgument<Type::INTEGER>("--height", "-h", "Height of maze or number of rows.", &height);
         addArgument<Type::INTEGER>("--start-x", "-sx", "Start position, x coordinate.", &start_x);

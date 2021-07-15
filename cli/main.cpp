@@ -1,7 +1,7 @@
-﻿#include "Arguments.h"
-#include "MazeModel.h"
-#include "MazeMaker.h"
-#include "Render.h"
+﻿#include "maze-maker/Arguments.h"
+#include "maze-maker/MazeModel.h"
+#include "maze-maker/MazeMaker.h"
+#include "maze-maker/Render.h"
 #include <iostream>
 #include <chrono>
 
