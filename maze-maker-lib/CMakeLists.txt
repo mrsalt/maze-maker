@@ -7,7 +7,7 @@ set(SRC_LIST
     "src/MazeModel.cpp"
     "src/MazeMaker.cpp"
     "src/Primitives.cpp"
-    "src/Render.cpp"
+    "src/MazeRenderer.cpp"
 )
 
 add_library (maze-lib ${SRC_LIST} ${HEADER_LIST})

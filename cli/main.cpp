@@ -1,7 +1,7 @@
-﻿#include "maze-maker/Arguments.h"
+﻿#include "Arguments.h"
 #include "maze-maker/MazeModel.h"
 #include "maze-maker/MazeMaker.h"
-#include "maze-maker/Render.h"
+#include "maze-maker/MazeRenderer.h"
 #include <iostream>
 #include <chrono>
 
@@ -10,8 +10,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     Arguments args;
-    if (!args.parse(argc, argv))
-    {
+    if (!args.parse(argc, argv)) {
         return -1;
     }
 
@@ -41,7 +40,18 @@ int main(int argc, char** argv)
         cout << "Maze generated in " << elapsed_seconds.count() << "s\n";
 
         start = end;
-        Render::output(model, args);
+
+        string outputFile;
+        if (args.output_filename.empty()) {
+            char buffer[64];
+            snprintf(buffer, sizeof(buffer), "maze-%d-%dx%d%s.png", args.seed, args.width, args.height, args.draw_solution ? "-solution" : "");
+            outputFile = buffer;
+        }
+        else {
+            outputFile = args.output_filename + ".png";
+        }
+        MazeRenderer renderer(model, args.pixels_per_cell);
+        renderer.output(outputFile, args.draw_solution);
         end = chrono::steady_clock::now();
         elapsed_seconds = end - start;
         cout << "Maze .png output in " << elapsed_seconds.count() << "s\n";

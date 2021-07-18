@@ -1,5 +1,5 @@
 #pragma once
-#include "maze-maker/ArgParser.h"
+#include "ArgParser.h"
 #include <string>
 
 class Arguments : public ArgumentParser

@@ -1,33 +1,31 @@
 #include <cairo.h>
 #include <algorithm>
-#include "maze-maker/Render.h"
+#include "maze-maker/MazeRenderer.h"
 using namespace std;
 
-void Render::output(const MazeModel& model, const Arguments & args)
+MazeRenderer::MazeRenderer(const MazeModel& model, int pixelsPerSquare)
+    : model(model)
+    , lineThickness{1}
+    , pixelsPerSquare(pixelsPerSquare)
+    , imageSize{ model.size.width * pixelsPerSquare + lineThickness, model.size.height * pixelsPerSquare + lineThickness }
 {
-    int pixelsPerSquare = args.pixels_per_cell;
-    string outputFile;
-    if (args.output_filename.empty()) {
-        char buffer[64];
-        snprintf(buffer, sizeof(buffer), "maze-%d-%dx%d%s.png", args.seed, args.width, args.height, args.draw_solution ? "-solution" : "");
-        outputFile = buffer;
-    }
-    else {
-        outputFile = args.output_filename + ".png";
-    }
-    cairo_surface_t* surface;
-    cairo_t* cr;
-    int lineThickness = 1;
-    Size imageSize{ model.size.width * pixelsPerSquare + lineThickness, model.size.height * pixelsPerSquare + lineThickness };
-
     surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, (int)imageSize.width, (int)imageSize.height);
-
     cr = cairo_create(surface);
+}
+
+MazeRenderer::~MazeRenderer()
+{
+    cairo_destroy(cr);
+    cairo_surface_destroy(surface);
+}
+
+void MazeRenderer::output(const string & outputFile, bool drawSolution)
+{
     cairo_set_line_width(cr, lineThickness);
 
-    renderMaze(cr, imageSize, model, pixelsPerSquare);
+    renderMaze();
 
-    if (args.draw_solution) {
+    if (drawSolution) {
         Location p = model.endPosition;
         cairo_set_source_rgb(cr, 1.0, 0, 0);
         cairo_move_to(cr, (p.x + 0.5) * pixelsPerSquare + 0.5, (p.y + 0.5) * pixelsPerSquare + 0.5);
@@ -47,11 +45,9 @@ void Render::output(const MazeModel& model, const Arguments & args)
     cairo_show_text(cr, "End");
 
     cairo_surface_write_to_png(surface, outputFile.c_str());
-    cairo_destroy(cr);
-    cairo_surface_destroy(surface);
 }
 
-void Render::renderMaze(cairo_t* cr, const Size& imageSize, const MazeModel& model, int pixelsPerSquare)
+void MazeRenderer::renderMaze()
 {
     // make background white
     cairo_set_source_rgb(cr, 1, 1, 1);
@@ -80,23 +76,23 @@ void Render::renderMaze(cairo_t* cr, const Size& imageSize, const MazeModel& mod
     auto isVeEdgeOpen = bind(isEdgeOpen, placeholders::_1, placeholders::_2, placeholders::_3, false);
 
     cairo_set_source_rgb(cr, 0, 0, 0);
-    drawHorizontalLine(cr, 0, model, pixelsPerSquare, isHoEdgeOpen);
-    drawHorizontalLine(cr, model.size.height, model, pixelsPerSquare, isHoEdgeOpen);
-    drawVerticalLine(cr, 0, model, pixelsPerSquare, isVeEdgeOpen);
-    drawVerticalLine(cr, model.size.width, model, pixelsPerSquare, isVeEdgeOpen);
+    drawHorizontalLine(0, isHoEdgeOpen);
+    drawHorizontalLine(model.size.height,isHoEdgeOpen);
+    drawVerticalLine(0, isVeEdgeOpen);
+    drawVerticalLine(model.size.width, isVeEdgeOpen);
     cairo_stroke(cr);
 
     // draw the innards of the maze
     function<bool(const MazeModel&, Location, Location)> isOpen = [](const MazeModel& m, Location l1, Location l2) { return m.pathIsOpen(l1, l2); };
     for (int y = 1; y < model.size.height; y++) {
-        drawHorizontalLine(cr, y, model, pixelsPerSquare, isOpen);
+        drawHorizontalLine(y, isOpen);
     }
     for (int x = 1; x < model.size.width; x++) {
-        drawVerticalLine(cr, x, model, pixelsPerSquare, isOpen);
+        drawVerticalLine(x, isOpen);
     }
 }
 
-void Render::drawHorizontalLine(cairo_t * cr, int y, const MazeModel & model, int pixelsPerSquare, function<bool(const MazeModel&, Location, Location)> isOpen)
+void MazeRenderer::drawHorizontalLine(int y, function<bool(const MazeModel&, Location, Location)> isOpen)
 {
     cairo_move_to(cr, 0.5, y * pixelsPerSquare + 0.5);
     bool pathIsClosed = true;
@@ -123,7 +119,7 @@ void Render::drawHorizontalLine(cairo_t * cr, int y, const MazeModel & model, in
     }
 }
 
-void Render::drawVerticalLine(cairo_t* cr, int x, const MazeModel& model, int pixelsPerSquare, std::function<bool(const MazeModel&, Location, Location)> isOpen)
+void MazeRenderer::drawVerticalLine(int x, function<bool(const MazeModel&, Location, Location)> isOpen)
 {
     cairo_move_to(cr, x * pixelsPerSquare + 0.5, 0.5);
     bool pathIsClosed = true;
