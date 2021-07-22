@@ -1,5 +1,9 @@
 # maze-maker
 
+This program is written in C++.  With it, you can generate a maze, which is written to a .png file.  You can make a very large or a small maze.  You can specify the start and end location for the maze.
+
+TODO: add an image or two
+
 ## Windows Setup
 You need to have the following installed:
 * CMake
@@ -12,6 +16,8 @@ You need to have the following installed:
   2. Once it's installed, install cairo:
      vcpkg install cairo:x64
 
+I recommend integrating vcpkg with Visual Studio:
+```
 vcpkg integrate install
 Applied user-wide integration for this vcpkg root.
 
@@ -20,6 +26,7 @@ Linking will be handled automatically.
 Installing new libraries will make them instantly available.
 
 CMake projects should use: "-DCMAKE_TOOLCHAIN_FILE=C:/Users/salis/git/vcpkg/scripts/buildsystems/vcpkg.cmake"
+```
 
 ## Linux / MacOS
 * CMake
@@ -29,8 +36,12 @@ Linux/ MacOS have native support for installing packages like cmake and cairo, s
 
 ## Building
 ### Command Line
+TODO: document
 ### Visual Studio
+TODO: document
 
-##FAQ
+## FAQ
+
 Q: When I build with Visual Studio I see this error during compilation: C:\maze-maker-lib\src\Render.cpp(1): fatal error C1083: Cannot open include file: 'cairo.h': No such file or directory
+
 A: This means cmake was unable to find the header file for the cairo graphics library, which is a dependency for this application.  See Windows Setup above.
