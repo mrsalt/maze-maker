@@ -75,12 +75,20 @@ Location MazeMaker::findBranch() const
     return { x, y };
 }
 
-void MazeMaker::go(int gameSeed, int maxDistance)
+void MazeMaker::go()
 {
-    srand(gameSeed);
-    model.markCell(model.startPosition, Direction::START);
+    while (iterate());
+}
 
-    while (position != model.endPosition) {
+bool MazeMaker::iterate()
+{
+    switch (state) {
+    case MazeState::NotStarted: {
+        model.markCell(model.startPosition, Direction::START);
+        state = MazeState::FindingPathToEnd;
+        return true;
+    }
+    case MazeState::FindingPathToEnd: {
         Location l = position;
         Direction direction = (Direction)(1 + rand() % 4);
         int distance = 1 + rand() % maxDistance;
@@ -93,9 +101,16 @@ void MazeMaker::go(int gameSeed, int maxDistance)
                 }
             }
         }
+        if (position == model.endPosition) {
+            state = MazeState::FillingRuses;
+        }
+        return true;
     }
-
-    while (model.getCountEmpty() > 0) {
+    case MazeState::FillingRuses: {
+        if (model.getCountEmpty() == 0) {
+            state = MazeState::Complete;
+            return false;
+        }
         Location branch = findBranch();
         Location from = model.pickNeighbor(branch, rand());
         Direction d = branch - from;
@@ -107,5 +122,11 @@ void MazeMaker::go(int gameSeed, int maxDistance)
             int distance = 1 + rand() % maxDistance;
             addPath(direction, distance);
         }
+        return true;
+    }
+    case MazeState::Complete: {
+    default:
+        return false;
+    }
     }
 }

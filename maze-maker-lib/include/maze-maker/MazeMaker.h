@@ -2,19 +2,33 @@
 #include "maze-maker/MazeModel.h"
 #include "maze-maker/Primitives.h"
 
+enum class MazeState
+{
+    NotStarted,
+    FindingPathToEnd,
+    FillingRuses,
+    Complete,
+};
+
 class MazeMaker
 {
 public:
     MazeModel& model;
     Location position;
+    const int maxDistance;
+    MazeState state;
 
-    MazeMaker(MazeModel& model)
+    MazeMaker(MazeModel& model, int seed, int maxDistance)
     : model(model)
+    , position(model.startPosition)
+    , maxDistance(maxDistance)
+    , state(MazeState::NotStarted)
     {
-        position = model.startPosition;
+        srand(seed);
     }
 
-    void go(int seed, int maxDistance);
+    void go();
+    bool iterate(); // returns true if maze is not complete
 
 protected:
     int addPath(Direction direction, int distance);

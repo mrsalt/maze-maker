@@ -32,9 +32,9 @@ int main(int argc, char** argv)
             cout << "Error: maze end position {" << model.endPosition.x << ", " << model.endPosition.y << "} is not inside maze boundaries.\n";
             return 1;
         }
-        MazeMaker maker(model);
+        MazeMaker maker(model, args.seed, args.max_path);
         auto start = chrono::steady_clock::now();
-        maker.go(args.seed, args.max_path);
+        maker.go();
         auto end = chrono::steady_clock::now();
         chrono::duration<double> elapsed_seconds = end - start;
         cout << "Maze generated in " << elapsed_seconds.count() << "s\n";
@@ -51,7 +51,8 @@ int main(int argc, char** argv)
             outputFile = args.output_filename + ".png";
         }
         MazeRenderer renderer(model, args.pixels_per_cell);
-        renderer.output(outputFile, args.draw_solution);
+        renderer.render(args.draw_solution);
+        renderer.output(outputFile);
         end = chrono::steady_clock::now();
         elapsed_seconds = end - start;
         cout << "Maze .png output in " << elapsed_seconds.count() << "s\n";

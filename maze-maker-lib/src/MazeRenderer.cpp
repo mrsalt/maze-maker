@@ -19,7 +19,17 @@ MazeRenderer::~MazeRenderer()
     cairo_surface_destroy(surface);
 }
 
-void MazeRenderer::output(const string & outputFile, bool drawSolution)
+unsigned char* MazeRenderer::getImageBits() const
+{
+    return cairo_image_surface_get_data(surface);
+}
+
+int MazeRenderer::getImageStride() const
+{
+    return cairo_image_surface_get_stride(surface);
+}
+
+void MazeRenderer::render(bool drawSolution)
 {
     cairo_set_line_width(cr, lineThickness);
 
@@ -43,8 +53,11 @@ void MazeRenderer::output(const string & outputFile, bool drawSolution)
 
     cairo_move_to(cr, (model.endPosition.x + 0.2) * pixelsPerSquare, (model.endPosition.y + 0.6) * pixelsPerSquare);
     cairo_show_text(cr, "End");
+}
 
-    cairo_surface_write_to_png(surface, outputFile.c_str());
+void MazeRenderer::output(const std::string& output_filename) const
+{
+    cairo_surface_write_to_png(surface, output_filename.c_str());
 }
 
 void MazeRenderer::renderMaze()
@@ -53,6 +66,11 @@ void MazeRenderer::renderMaze()
     cairo_set_source_rgb(cr, 1, 1, 1);
     cairo_rectangle(cr, 0, 0, imageSize.width, imageSize.height);
     cairo_fill(cr);
+
+    if (model.countEmpty > 0) {
+        // draw gray backgrounds for all empty cells
+        renderEmptyCells();
+    }
 
     // draw maze frame
     function<bool(const MazeModel&, Location, Location, bool)> isEdgeOpen = [](const MazeModel& m, Location l1, Location l2, bool horizontal) {
@@ -89,6 +107,33 @@ void MazeRenderer::renderMaze()
     }
     for (int x = 1; x < model.size.width; x++) {
         drawVerticalLine(x, isOpen);
+    }
+}
+
+void MazeRenderer::renderEmptyCells()
+{
+    cairo_set_source_rgb(cr, 0.7, 0.7, 0.7);
+    for (int y = 0; y < model.size.height; y++) {
+        if (model.emptyCountByRow[y] == 0)
+            continue;
+        bool cellIsEmpty = true;
+        int moveTo = 0;
+        for (int x = 0; x <= model.size.width; x++) {
+            Location l{ x, y };
+            if (x < model.size.width && model.getCell(l).isEmpty()) {
+                if (!cellIsEmpty) {
+                    moveTo = x;
+                    cellIsEmpty = true;
+                }
+            }
+            else {
+                if (cellIsEmpty) {
+                    cairo_rectangle(cr, moveTo * pixelsPerSquare, y * pixelsPerSquare, (x - moveTo) * pixelsPerSquare, pixelsPerSquare);
+                    cairo_fill(cr);
+                    cellIsEmpty = false;
+                }
+            }
+        }
     }
 }
 

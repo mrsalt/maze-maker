@@ -17,9 +17,14 @@ class MazeRenderer
 public:
     MazeRenderer(const MazeModel& model, int pixelsPerSquare);
     ~MazeRenderer();
-    void output(const std::string& output_filename, bool drawSolution);
+    void render(bool drawSolution);
+    void output(const std::string& output_filename) const;
+    Size getImageSize() const { return imageSize; }
+    unsigned char* getImageBits() const;
+    int getImageStride() const;
 private:
     void renderMaze();
+    void renderEmptyCells();
     void drawHorizontalLine(int y, std::function<bool(const MazeModel&, Location, Location)> isOpen);
     void drawVerticalLine(int x, std::function<bool(const MazeModel&, Location, Location)> isOpen);
 };

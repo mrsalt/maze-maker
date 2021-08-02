@@ -4,6 +4,7 @@ find_path(CAIRO_INCLUDE_DIR cairo/cairo.h)
 
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "include/maze-maker/*.h")
 set(SRC_LIST
+    "src/MazeApp.cpp"
     "src/MazeModel.cpp"
     "src/MazeMaker.cpp"
     "src/Primitives.cpp"
