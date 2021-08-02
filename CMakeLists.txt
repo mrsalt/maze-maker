@@ -9,3 +9,4 @@ endif()
 
 add_subdirectory(maze-maker-lib)
 add_subdirectory(cli)
+add_subdirectory(guiWin32)
